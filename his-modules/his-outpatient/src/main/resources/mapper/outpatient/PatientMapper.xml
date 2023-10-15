@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xt37.his.outpatient.mapper.PatientMapper">
+    
+    <resultMap type="Patient" id="PatientResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="mobile"    column="mobile"    />
+        <result property="openId"    column="open_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPatientVo">
+        select id, name, mobile, open_id, create_time, update_time from patient
+    </sql>
+
+    <select id="selectPatientList" parameterType="xt37.his.outpatient.domain.Patient" resultMap="PatientResult">
+        <include refid="selectPatientVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="mobile != null  and mobile != ''"> and mobile = #{mobile}</if>
+            <if test="openId != null  and openId != ''"> and open_id = #{openId}</if>
+        </where>
+    </select>
+    
+    <select id="selectPatientById" parameterType="Long" resultMap="PatientResult">
+        <include refid="selectPatientVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPatient" parameterType="xt37.his.outpatient.domain.Patient" useGeneratedKeys="true" keyProperty="id">
+        insert into patient
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="mobile != null and mobile != ''">mobile,</if>
+            <if test="openId != null">open_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="mobile != null and mobile != ''">#{mobile},</if>
+            <if test="openId != null">#{openId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePatient" parameterType="xt37.his.outpatient.domain.Patient">
+        update patient
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="mobile != null and mobile != ''">mobile = #{mobile},</if>
+            <if test="openId != null">open_id = #{openId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePatientById" parameterType="Long">
+        delete from patient where id = #{id}
+    </delete>
+
+    <delete id="deletePatientByIds" parameterType="String">
+        delete from patient where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
